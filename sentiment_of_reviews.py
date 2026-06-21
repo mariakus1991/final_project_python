@@ -205,13 +205,14 @@ plt.show()
 
 df.to_csv('markets_reviews.csv', index=False)
 
-"""**7. Оценка точности предсказаний модели метрикой Accuracy**"""
+"""**7. Оценка точности предсказаний модели метрикой F1-score**"""
 
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import f1_score
+import pandas as pd
 
+df_evaluated = pd.read_csv('markets_reviews.csv')
 
 true_sentiments_df = pd.read_csv('/content/sample_data/true_sentiments.csv')
-
 
 sentiment_mapping = {
     0: 'positive',
@@ -221,14 +222,16 @@ sentiment_mapping = {
 
 true_sentiments_df['true_sentiment'] = true_sentiments_df.iloc[:, 0].map(sentiment_mapping)
 
-if len(df) != len(true_sentiments_df):
-    print("Warning: The number of predicted sentiments does not match the number of true sentiments.")
-    print(f"Predicted sentiments count: {len(df)}")
+
+if len(df_evaluated) != len(true_sentiments_df):
+    print("Error: The number of predicted sentiments and true sentiments do not match.")
+    print(f"Predicted sentiments count (reloaded): {len(df_evaluated)}")
     print(f"True sentiments count: {len(true_sentiments_df)}")
+    f1 = float('nan')
+else:
+    f1 = f1_score(true_sentiments_df['true_sentiment'], df_evaluated['sentiment'], average='weighted')
 
-accuracy = accuracy_score(true_sentiments_df['true_sentiment'], df['sentiment'])
-
-print(f"Точность модели: {accuracy:.2f}")
+print(f"F1-score модели: {f1:.2f}")
 
 """**8. Аналитика и графики**"""
 
